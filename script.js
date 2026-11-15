@@ -30,6 +30,33 @@ if (menuToggle && mainNav) {
 const year = document.querySelector("#current-year");
 if (year) year.textContent = String(new Date().getFullYear());
 
+const siteHeader = document.querySelector(".site-header");
+const updateHeader = () => {
+  if (siteHeader) siteHeader.classList.toggle("is-scrolled", window.scrollY > 24);
+};
+updateHeader();
+window.addEventListener("scroll", updateHeader, { passive: true });
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if ("IntersectionObserver" in window && !reduceMotion) {
+  const revealItems = document.querySelectorAll(
+    ".section-intro, .service-card, .approach-step, .contact-copy, .project-details",
+  );
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12 });
+
+  revealItems.forEach((item, index) => {
+    item.classList.add("reveal");
+    item.style.transitionDelay = `${(index % 4) * 70}ms`;
+    revealObserver.observe(item);
+  });
+}
+
 const projectForm = document.querySelector("#project-form");
 if (projectForm instanceof HTMLFormElement) {
   projectForm.addEventListener("submit", (event) => {
